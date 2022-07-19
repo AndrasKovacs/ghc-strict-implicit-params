@@ -5,4 +5,6 @@ Usage: add this package as a dependency to `cabal` or `stack`, then enable the `
 
 This turns all implicit parameters on top-level definitions strict.
 
-**Note**: this only works on top-level things currently. I'm working on covering all bindings.
+**Note**: WIP. Doesn't yet work for all input.
+
+
