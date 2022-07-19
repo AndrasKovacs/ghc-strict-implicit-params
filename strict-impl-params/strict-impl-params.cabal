@@ -7,4 +7,4 @@ library
   default-language: Haskell2010
   build-depends: base, ghc >= 9.2.3, ghc-prim, template-haskell
   exposed-modules: StrictImplParams
-  -- other-modules:
+  ghc-options: -O

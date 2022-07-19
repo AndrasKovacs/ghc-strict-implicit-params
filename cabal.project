@@ -1,4 +1,3 @@
 packages:
-  ./strict-impl-let
   ./strict-impl-params
   ./strict-impl-test

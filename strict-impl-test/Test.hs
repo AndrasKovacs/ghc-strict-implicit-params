@@ -1,9 +1,12 @@
-{-# language ImplicitParams, RankNTypes #-}
+{-# language ImplicitParams, RankNTypes, ConstraintKinds #-}
 {-# options_ghc -fplugin StrictImplParams #-}
 
 module Test where
 
-foo :: (?lvl :: Int, ?foo :: Int) => Int -> (?bar :: Int) => Int
+type Foo = (?foo :: Int)
+type Bar = (?bar :: Int)
+
+foo :: Foo => Int -> Bar => Int
 foo x = x
 {-# noinline foo #-}
 
