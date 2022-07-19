@@ -5,6 +5,5 @@ Usage: add this package as a dependency to `cabal` or `stack`, then enable the `
 
 This turns all implicit parameters on top-level definitions strict.
 
-**Note**: WIP. Doesn't yet work for all input.
-
-
+**Note**: it only works on top-level definitions. It doesn't work on local let-s
+and lambda expressions. I'll try to add support for these in the future.
