@@ -48,7 +48,7 @@ setNoOccInfo x = case idInfo x of
   i -> lazySetIdInfo x (i {occInfo = noOccInfo})
 
 forceType :: Type -> Type
-forceType a = case tcView a of
+forceType a = case coreView a of
   Just a' -> forceType a'
   _       -> a
 
