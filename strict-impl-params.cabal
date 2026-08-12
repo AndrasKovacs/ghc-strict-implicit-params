@@ -1,8 +1,8 @@
 name: strict-impl-params
 cabal-version: 1.12
 build-type: Simple
-version: 1.0.0
-synopsis: Plugin for making top-level implicit parameters strict
+version: 1.1.1
+synopsis: Plugin for making implicit parameters strict
 homepage: https://github.com/AndrasKovacs/ghc-strict-implicit-params
 bug-reports: https://github.com/AndrasKovacs/ghc-strict-implicit-params/issues
 copyright: 2022 András Kovács
@@ -15,7 +15,5 @@ library
   default-language: Haskell2010
   build-depends:
       base >=4.7 && <5
-    , ghc >= 9.2.3 && < 9.14
-    , ghc-prim < 0.14
-    , template-haskell < 2.24
+    , ghc >= 9.2.3 && < 9.16
   exposed-modules: StrictImplParams
