@@ -17,9 +17,6 @@ definitions.
 - This plugin does not work on *nested* constraints containing implicit parameters.
   For example `f :: (?foo :: Int, ?bar :: Int, ?baz :: Int) => ...` is fine, but
   in `f :: (?foo :: Int, (?bar :: Int, ?baz :: Int)) => ...` only `?foo` gets forced.
-- Only curried implicit parameters are supported. Example: `(?x :: Int, ?y :: Int) => Int` is not
-  strictified, but `(?x :: Int) => (?y :: Int) => Int` is. The current implementation looks for
-  arguments with an implicit parameter type, but a pair of dictionaries is not of this form anymore.
 - Implicit let-bindings are not strictified! This is usually not an issue if all functions which
   take implicit parameters are strict, because that causes non-dead let bindings to be
   forced. However, you should be still mindful of passing implicit parameters to statically unknown
