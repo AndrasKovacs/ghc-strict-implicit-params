@@ -6,6 +6,7 @@ module StrictImplParams (plugin) where
 
 import Data.Foldable
 import Data.Maybe
+import GHC.Core.Class (classMethods)
 import GHC.Core.Predicate
 import GHC.Plugins
 
@@ -54,10 +55,25 @@ isImplicitParamTy ty = isJust $ do
   isIPPred_maybe cls tys
 #endif
 
--- | Force var, continue with CoreExpr body that has Type type.
+-- | The value stored in an implicit parameter dictionary, together with its type,
+--   i.e. @(ip \@x \@a d, a)@ for @d :: IP x a@.
+ipValue :: Var -> Maybe (CoreExpr, Type)
+ipValue x = do
+  (tc, args) <- splitTyConApp_maybe (varType x)
+  cls        <- tyConClass_maybe tc
+  valTy      <- case args of [_sym, valTy] -> Just valTy; _ -> Nothing
+  sel        <- case classMethods cls of [sel] -> Just sel; _ -> Nothing
+  pure (mkCoreApps (Var sel) (foldr' (\a as -> (Type a:) $! as) [Var x] args), valTy)
+
+-- | Force the value of an implicit param, continue with CoreExpr body that has Type
+--   type.
+--
+--   Note: we force the *value* stored in the dictionary, by applying the class method
+--   to it.
 forceVar :: Var -> CoreExpr -> Type -> CoreExpr
-forceVar x body bodyTy =
-  mkWildCase (Var x) (GHC.Scaled manyType (varType x)) bodyTy [Alt DEFAULT [] body]
+forceVar x body bodyTy = case ipValue x of
+  Just (val, valTy) -> mkWildCase val (GHC.Scaled manyType valTy) bodyTy [Alt DEFAULT [] body]
+  Nothing           -> error "forceVar: not an implicit parameter dictionary"
 
 pass :: ModGuts -> CoreM ModGuts
 pass guts = do
@@ -72,8 +88,19 @@ pass guts = do
         go :: [Var] -> CoreExpr -> Type -> CoreExpr
         go vars t a = case t of
           Lam x t -> case coreFullView a of
-            GHC.ForAllTy _ a  -> Lam x $! go vars t a
-            GHC.FunTy _ _ a b | isImplicitParamTy a -> Lam x $! go (x:vars) t b
+            -- Note: a Core type lambda binds its own type variable, which is not necessarily the
+            -- one bound by the ForAllTy in the definition's type. Since we use the def type to
+            -- generate the Core of the forcing, we need to rename the type binder to match the
+            -- lambda binder. We sincerely hope that Core names are unique and this renaming doesn't
+            -- introduce shadowing.
+            GHC.ForAllTy bndr a -> let tv = binderVar bndr
+                                       a' | isTyVar x, tv /= x = substTyWith [tv] [mkTyVarTy x] a
+                                          | otherwise          = a
+                                   in Lam x $! go vars t a'
+            -- Precaution: we add an occurrence of the binder, so whatever occurrence info it
+            -- carries from the desugarer should be outdated.
+            GHC.FunTy _ _ a b | isImplicitParamTy a -> let x' = zapIdOccInfo x in
+                                                       Lam x' $! go (x':vars) t b
                               | otherwise           -> Lam x $! go vars t b
             _ -> error $ "unexpected type for lambda expression: " ++ dbg a
           t ->
