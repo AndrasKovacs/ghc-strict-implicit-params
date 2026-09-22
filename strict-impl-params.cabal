@@ -28,5 +28,7 @@ test-suite strictness
       base >=4.7 && <5
     , strict-impl-params
   -- -O2 and -dcore-lint needed to catch GHC
-  -- miscompilation
-  ghc-options: -O2 -dcore-lint -fplugin StrictImplParams
+  -- miscompilation, but Hackage does not accept
+  -- -dcore-lint
+  ghc-options: -O2 -fplugin StrictImplParams
+  -- ghc-options: -dcore-lint
