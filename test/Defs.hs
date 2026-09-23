@@ -97,3 +97,13 @@ c3 n = c2 n + c1 n + c0 n
 closure :: (?x :: Int) => Int -> (Int -> Int)
 closure n = \k -> k + n + ?x
 {-# noinline closure #-}
+
+-- Single-use dictionary with a non-trivial field: on GHC >= 9.14 the field is evaluated
+-- at the call site of g.
+callSite :: (Int -> Int) -> Int -> Int
+callSite k n = let ?x = k n in g 20
+{-# noinline callSite #-}
+
+callSiteBranch :: (Int -> Int) -> Int -> Int
+callSiteBranch k n = let ?x = k n in if n > 0 then g 20 else dead 30
+{-# noinline callSiteBranch #-}

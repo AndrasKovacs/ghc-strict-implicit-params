@@ -29,6 +29,9 @@ main = do
     let ?y = 100 in eq ref "h" (h 5) 131
 
   eq ref "localIP" (localIP 1) 17
+  eq ref "callSite"        (callSite (* 2) 5)       30
+  eq ref "callSiteBranchT" (callSiteBranch (* 2) 5) 30
+  eq ref "callSiteBranchF" (callSiteBranch (* 2) 0) 31
 
   let ?s = "!" in do
     eq ref "str"      (str 7)  "7!"
@@ -55,6 +58,8 @@ main = do
   strict ref "closure"  (\_ -> let ?x = boom in closure 1 2)
   strict ref "cfgUse"   (\_ -> let ?cfg = error "boom" in cfgUse 1)
   strict ref "fnUse"    (\_ -> let ?k = error "boom" in fnUse 1)
+  strict ref "callSite" (\_ -> callSite (\_ -> boom) 1)
+  strict ref "callSiteBranchF" (\_ -> callSiteBranch (\_ -> boom) 0)
 
   failures <- readIORef ref
   if failures == 0

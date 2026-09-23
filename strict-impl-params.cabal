@@ -1,7 +1,7 @@
 name: strict-impl-params
 cabal-version: 1.12
 build-type: Simple
-version: 1.1.2
+version: 1.2.0
 synopsis: Plugin for making implicit parameters strict
 homepage: https://github.com/AndrasKovacs/ghc-strict-implicit-params
 bug-reports: https://github.com/AndrasKovacs/ghc-strict-implicit-params/issues
