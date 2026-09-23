@@ -1,4 +1,7 @@
 # ghc-strict-implicit-params
+
+[![Hackage](https://img.shields.io/hackage/v/strict-impl-params.svg)](https://hackage.haskell.org/package/strict-impl-params)
+
 GHC plugin for making implicit parameters strict.
 
 Usage: add this package as a dependency to `cabal` or `stack`, then enable the `-fplugin
